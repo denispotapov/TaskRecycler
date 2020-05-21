@@ -40,12 +40,10 @@ internal abstract class TaskDatabase : RoomDatabase() {
 
         fun getInstance(context: Context, scope: CoroutineScope): TaskDatabase {
             synchronized(this) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(
-                        context.applicationContext,
-                        TaskDatabase::class.java, "task_database"
-                    ).addCallback(TaskDatabaseCallback(scope)).build()
-                }
+                INSTANCE = INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    TaskDatabase::class.java, "task_database"
+                ).addCallback(TaskDatabaseCallback(scope)).build()
                 return INSTANCE!!
             }
         }

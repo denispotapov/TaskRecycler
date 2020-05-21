@@ -42,7 +42,7 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskHolder>(TaskDiffCallback()
                     val task = getItem(adapterPosition)
                     task.task = taskText.text.toString()
                     listener?.onChange(task)
-                    
+
                 }
             }
             completeTask.setOnCheckedChangeListener { buttonView, isChecked ->

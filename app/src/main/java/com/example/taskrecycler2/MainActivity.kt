@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+        taskViewModel.allTasks.observe(this, Observer { taskAdapter.submitList(it) })
+
         add_task.setOnClickListener {
             taskViewModel.insert(Task("", false))
         }
@@ -50,11 +53,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecycler() {
-        recycler_view.adapter = taskAdapter
-        recycler_view.layoutManager = LinearLayoutManager(this@MainActivity)
-
-        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
-        taskViewModel.allTasks.observe(this, Observer { taskAdapter.submitList(it) })
+        recycler_view.apply {
+            adapter = taskAdapter
+            layoutManager = LinearLayoutManager(this@MainActivity)
+        }
     }
 
     private fun deleteTask() {
@@ -69,13 +71,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-               edit_task_text.clearFocus()
+                edit_task_text.clearFocus()
                 taskViewModel.delete(taskAdapter.getTaskAt(viewHolder.adapterPosition))
                 Toast.makeText(this@MainActivity, "Задача удалена", Toast.LENGTH_SHORT).show()
             }
         }
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(recycler_view)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recycler_view)
     }
 
     private fun saveTask() {
