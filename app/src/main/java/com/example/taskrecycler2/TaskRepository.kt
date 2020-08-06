@@ -17,4 +17,15 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun deleteAllTasks() {
         taskDao.deleteAllTasks()
     }
+
+    companion object {
+
+        // For Singleton instantiation
+        @Volatile private var instance: TaskRepository? = null
+
+        fun getInstance(taskDao: TaskDao) =
+            instance ?: synchronized(this) {
+                instance ?: TaskRepository(taskDao).also { instance = it }
+            }
+    }
 }

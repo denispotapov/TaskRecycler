@@ -4,26 +4,33 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.task_item.*
 
+
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var taskViewModel: TaskViewModel
+    private val taskViewModel: TaskViewModel by viewModels {
+        InjectorUtils.provideTaskViewModelFactory(this)
+    }
+
     val taskAdapter = TaskAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+        //taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
         taskViewModel.allTasks.observe(this, Observer { taskAdapter.submitList(it) })
+
 
         add_task.setOnClickListener {
             taskViewModel.insert(Task("", false))
@@ -92,5 +99,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
+
+
+
+
 
 

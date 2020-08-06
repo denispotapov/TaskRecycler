@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Database(entities = [Task::class], version = 1, exportSchema = false)
@@ -20,14 +21,13 @@ internal abstract class TaskDatabase : RoomDatabase() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
-                scope.launch {
+                GlobalScope.launch {
                     populateDatabase(database.taskDao())
                 }
             }
         }
 
         suspend fun populateDatabase(taskDao: TaskDao) {
-
             taskDao.insert(Task("Задача 1", false))
             taskDao.insert(Task("Задача 2", false))
             taskDao.insert(Task("Задача 3", false))
@@ -35,7 +35,7 @@ internal abstract class TaskDatabase : RoomDatabase() {
     }
 
     companion object {
-
+        @Volatile
         private var INSTANCE: TaskDatabase? = null
 
         fun getInstance(context: Context, scope: CoroutineScope): TaskDatabase {
