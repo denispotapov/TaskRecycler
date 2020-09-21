@@ -3,11 +3,12 @@ package com.example.taskrecycler2
 import android.content.Context
 import kotlinx.coroutines.GlobalScope
 
+/*
 object InjectorUtils {
 
-    private fun getTaskRepository(context: Context): TaskRepository {
-        return TaskRepository.getInstance(
-            TaskDatabase.getInstance(context.applicationContext, GlobalScope).taskDao()
+    private fun getTaskRepository(context: Context): TaskDefaultRepository {
+        return TaskDefaultRepository.getInstance(
+            TaskDatabase.(context.applicationContext, GlobalScope).taskDao()
         )
     }
 
@@ -16,4 +17,4 @@ object InjectorUtils {
         return TaskViewModelFactory(repository)
     }
 
-}
+}*/

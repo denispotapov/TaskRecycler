@@ -1,0 +1,72 @@
+package com.example.taskrecycler2.di
+
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.taskrecycler2.Task
+import com.example.taskrecycler2.TaskDatabase
+import com.example.taskrecycler2.local.TaskDao
+import com.example.taskrecycler2.remote.JsonPlaceHolderApi
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
+
+
+@Module
+@InstallIn(ApplicationComponent::class)
+object ApplicationModule {
+
+    @Singleton
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Singleton
+    @Provides
+    fun provideCoroutineScope(): CoroutineScope = GlobalScope
+
+    @Singleton
+    @Provides
+    fun provideTaskDao(taskDatabase: TaskDatabase): TaskDao =
+        taskDatabase.taskDao()
+
+    @Singleton
+    @Provides
+    fun provideDatabase(@ApplicationContext context: Context, scope: CoroutineScope): TaskDatabase {
+        var INSTANCE: TaskDatabase? = null
+
+        INSTANCE = INSTANCE ?: Room.databaseBuilder(
+            context.applicationContext,
+            TaskDatabase::class.java, "task_database"
+        ).addCallback(object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                INSTANCE?.let { database ->
+                    scope.launch {
+                        populateDatabase(database.taskDao())
+                    }
+                }
+            }
+            suspend fun populateDatabase(taskDao: TaskDao) {
+                taskDao.insert(Task(201,"Задача 1", false))
+                taskDao.insert(Task(202,"Задача 2", false))
+                taskDao.insert(Task(203,"Задача 3", false))
+            }
+        }).build()
+        return INSTANCE
+    }
+
+    @Singleton
+    @Provides
+    fun provideJsonPlaceHolderApi(): JsonPlaceHolderApi = Retrofit.Builder()
+        .baseUrl("https://jsonplaceholder.typicode.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(JsonPlaceHolderApi::class.java)
+}

@@ -7,34 +7,34 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.task_item.*
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val taskViewModel: TaskViewModel by viewModels {
-        InjectorUtils.provideTaskViewModelFactory(this)
-    }
-
+    private val taskViewModel: TaskViewModel by viewModels()
     val taskAdapter = TaskAdapter()
+    private val remoteTasks: List<TaskResponse> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
-        taskViewModel.allTasks.observe(this, Observer { taskAdapter.submitList(it) })
-
+        taskViewModel.allTasks.observe(this, Observer {
+            taskAdapter.submitList(it)
+        })
 
         add_task.setOnClickListener {
-            taskViewModel.insert(Task("", false))
+                taskViewModel.insert(Task("пустое поле", false))
         }
+
+        taskViewModel.requestTask(remoteTasks)
 
         initRecycler()
         deleteTask()
@@ -99,9 +99,3 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
-
-
-
-
-
-

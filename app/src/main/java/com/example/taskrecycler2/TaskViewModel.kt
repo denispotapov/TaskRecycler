@@ -1,6 +1,7 @@
 package com.example.taskrecycler2
 
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,21 +9,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
+class TaskViewModel @ViewModelInject constructor(private val defaultRepository: TaskDefaultRepository) :
+    ViewModel() {
 
 
-    val allTasks: LiveData<List<Task>> = repository.allTasks
+    val allTasks: LiveData<List<Task>> = defaultRepository.getTasks()
 
     fun insert(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insert(task)
+        defaultRepository.insert(task)
     }
 
     fun delete(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        repository.delete(task)
+        defaultRepository.delete(task)
     }
 
     fun deleteAllTasks() = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteAllTasks()
+        defaultRepository.deleteAllTasks()
     }
 
+    fun requestTask(remoteTasks: List<TaskResponse>) = viewModelScope.launch(Dispatchers.IO) {
+        defaultRepository.requestTasks(remoteTasks)
+    }
 }
