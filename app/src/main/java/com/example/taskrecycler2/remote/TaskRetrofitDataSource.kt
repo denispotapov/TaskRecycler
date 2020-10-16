@@ -3,6 +3,7 @@ package com.example.taskrecycler2.remote
 import com.example.taskrecycler2.TaskResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import javax.inject.Inject
 
 class TaskRetrofitDataSource @Inject constructor(
@@ -17,12 +18,10 @@ class TaskRetrofitDataSource @Inject constructor(
                 return@withContext if (response.isSuccessful && !taskResponseList.isNullOrEmpty()) {
                     Result.Success(taskResponseList)
                 } else {
-                    Result.Error(
-                        CustomException(message = "Не удалось получить задачи")
-                    )
+                    Result.Error(Exception())
                 }
-            } catch (t: Throwable) {
-                return@withContext Result.Error(CustomException(cause = t))
+            } catch (e: Exception) {
+                Result.Error(e)
             }
         }
 }

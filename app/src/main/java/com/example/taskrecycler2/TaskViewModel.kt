@@ -1,6 +1,7 @@
 package com.example.taskrecycler2
 
 
+import android.widget.Toast
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,7 @@ class TaskViewModel @ViewModelInject constructor(private val defaultRepository: 
 
     fun insert(task: Task) = viewModelScope.launch(Dispatchers.IO) {
         defaultRepository.insert(task)
+
     }
 
     fun delete(task: Task) = viewModelScope.launch(Dispatchers.IO) {
@@ -29,5 +31,6 @@ class TaskViewModel @ViewModelInject constructor(private val defaultRepository: 
 
     fun requestTask(remoteTasks: List<TaskResponse>) = viewModelScope.launch(Dispatchers.IO) {
         defaultRepository.requestTasks(remoteTasks)
+
     }
 }

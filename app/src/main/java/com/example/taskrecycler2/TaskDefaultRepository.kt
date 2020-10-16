@@ -32,13 +32,13 @@ class TaskDefaultRepository @Inject constructor(
         taskLocalDataSource.deleteAllTasks()
     }
 
-    override suspend fun requestTasks(remoteTasks: List<TaskResponse>) = withContext(ioDispatcher) {
-        when (val getTasksResult = taskRemoteDataSource.getRemoteTasks(remoteTasks)) {
+    override suspend fun requestTasks(remoteTasks: List<TaskResponse>)= withContext(ioDispatcher) {
+        when(val getTasksResult = taskRemoteDataSource.getRemoteTasks(remoteTasks)) {
             is Result.Success -> {
                 taskLocalDataSource.insertAll(getTasksResult.data.map { it.toEntity() })
             }
             is Result.Error -> {
-                Timber.e(getTasksResult.toString())
+                Timber.d(getTasksResult.exception)
             }
         }
     }
