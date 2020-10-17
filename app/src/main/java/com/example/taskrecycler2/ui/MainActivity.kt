@@ -1,24 +1,33 @@
-package com.example.taskrecycler2
+package com.example.taskrecycler2.ui
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.View.GONE
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.taskrecycler2.R
+import com.example.taskrecycler2.ViewModelProviderFactory
+import com.example.taskrecycler2.local.Task
+import com.example.taskrecycler2.local.TaskDatabase
+import com.example.taskrecycler2.remote.TaskResponse
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.task_item.*
+import javax.inject.Inject
 
+class MainActivity : DaggerAppCompatActivity() {
 
-@AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var providerFactory: ViewModelProviderFactory
+    lateinit var taskViewModel: TaskViewModel
 
-    private val taskViewModel: TaskViewModel by viewModels()
     val taskAdapter = TaskAdapter()
     private val remoteTasks: List<TaskResponse> = listOf()
 
@@ -26,16 +35,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        taskViewModel = ViewModelProvider(this, providerFactory).get(TaskViewModel::class.java)
+
         taskViewModel.allTasks.observe(this, Observer {
             taskAdapter.submitList(it)
         })
 
         add_task.setOnClickListener {
-                taskViewModel.insert(Task("пустое поле", false))
+            taskViewModel.insert(Task("пустое поле", false))
         }
 
         taskViewModel.requestTask(remoteTasks)
-
 
         initRecycler()
         deleteTask()
@@ -52,8 +62,8 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.delete_all -> {
                 edit_task_text.clearFocus()
-                taskViewModel.deleteAllTasks()
-                Toast.makeText(this, "Все задачи удалены", Toast.LENGTH_SHORT).show()
+                    taskViewModel.deleteAllTasks()
+                    Toast.makeText(this, "Все задачи удалены", Toast.LENGTH_SHORT).show()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -100,3 +110,5 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
+
+

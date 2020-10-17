@@ -1,5 +1,7 @@
 package com.example.taskrecycler2.di
 
+import android.app.Application
+import android.content.Context
 import com.example.taskrecycler2.TaskDefaultRepository
 import com.example.taskrecycler2.TaskRepository
 import com.example.taskrecycler2.local.TaskLocalDataSource
@@ -8,12 +10,16 @@ import com.example.taskrecycler2.remote.TaskRemoteDataSource
 import com.example.taskrecycler2.remote.TaskRetrofitDataSource
 import dagger.Binds
 import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
 abstract class ApplicationModuleBinds {
+
+    @Singleton
+    @Binds
+    @AppContext
+    abstract fun bindContext(application: Application): Context
 
     @Binds
     abstract fun bindTaskLocalDataSource(
@@ -30,3 +36,7 @@ abstract class ApplicationModuleBinds {
         taskDefaultRepository: TaskDefaultRepository
     ): TaskRepository
 }
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AppContext

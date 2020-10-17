@@ -4,15 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.taskrecycler2.Task
-import com.example.taskrecycler2.TaskDatabase
+import com.example.taskrecycler2.local.Task
 import com.example.taskrecycler2.local.TaskDao
+import com.example.taskrecycler2.local.TaskDatabase
 import com.example.taskrecycler2.remote.JsonPlaceHolderApi
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,7 +17,6 @@ import javax.inject.Singleton
 
 
 @Module
-@InstallIn(ApplicationComponent::class)
 object ApplicationModule {
 
     @Singleton
@@ -38,7 +34,7 @@ object ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext context: Context, scope: CoroutineScope): TaskDatabase {
+    fun provideDatabase(@AppContext context: Context, scope: CoroutineScope): TaskDatabase {
         var INSTANCE: TaskDatabase? = null
 
         INSTANCE = INSTANCE ?: Room.databaseBuilder(
@@ -53,10 +49,11 @@ object ApplicationModule {
                     }
                 }
             }
+
             suspend fun populateDatabase(taskDao: TaskDao) {
-                taskDao.insert(Task(201,"Задача 1", false))
-                taskDao.insert(Task(202,"Задача 2", false))
-                taskDao.insert(Task(203,"Задача 3", false))
+                taskDao.insert(Task(201, "Задача 1", false))
+                taskDao.insert(Task(202, "Задача 2", false))
+                taskDao.insert(Task(203, "Задача 3", false))
             }
         }).build()
         return INSTANCE
@@ -70,3 +67,4 @@ object ApplicationModule {
         .build()
         .create(JsonPlaceHolderApi::class.java)
 }
+

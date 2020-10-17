@@ -1,6 +1,5 @@
 package com.example.taskrecycler2.remote
 
-import com.example.taskrecycler2.TaskResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.lang.Exception
@@ -18,8 +17,9 @@ class TaskRetrofitDataSource @Inject constructor(
                 return@withContext if (response.isSuccessful && !taskResponseList.isNullOrEmpty()) {
                     Result.Success(taskResponseList)
                 } else {
-                    Result.Error(Exception())
+                   Result.Error(Exception())
                 }
+
             } catch (e: Exception) {
                 Result.Error(e)
             }

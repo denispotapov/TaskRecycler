@@ -1,4 +1,4 @@
-package com.example.taskrecycler2
+package com.example.taskrecycler2.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +8,8 @@ import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.taskrecycler2.R
+import com.example.taskrecycler2.local.Task
 import kotlinx.android.synthetic.main.task_item.view.*
 
 
@@ -15,7 +17,7 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskHolder>(TaskDiffCallback()
 
     private var listener: OnItemClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskAdapter.TaskHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskHolder {
         return TaskHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.task_item, parent, false)
         )

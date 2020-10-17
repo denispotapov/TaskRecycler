@@ -1,14 +1,18 @@
 package com.example.taskrecycler2
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.example.taskrecycler2.di.DaggerAppComponent
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 import timber.log.Timber
 
 
-@HiltAndroidApp
-open class TaskApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
+class TaskApplication : DaggerApplication() {
+
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerAppComponent.builder()
+            .application(this)
+            .build()
+
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
     }
 }

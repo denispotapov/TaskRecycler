@@ -1,4 +1,4 @@
-package com.example.taskrecycler2
+package com.example.taskrecycler2.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,9 +14,3 @@ data class Task (var task: String, var complete: Boolean) {
     }
 
 }
-
-    /*@PrimaryKey(autoGenerate = true)
-    var id: Int = 0*/
-
-
-//indices = [Index(value = ["task"], unique = true)]

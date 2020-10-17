@@ -1,6 +1,8 @@
 package com.example.taskrecycler2
 
 import androidx.lifecycle.LiveData
+import com.example.taskrecycler2.local.Task
+import com.example.taskrecycler2.remote.TaskResponse
 
 interface TaskRepository {
 

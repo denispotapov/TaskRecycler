@@ -2,7 +2,6 @@ package com.example.taskrecycler2.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.taskrecycler2.Task
 
 @Dao
 interface TaskDao {
