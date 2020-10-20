@@ -1,25 +1,23 @@
 package com.example.taskrecycler2.ui
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.View.GONE
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.taskrecycler2.BuildConfig
 import com.example.taskrecycler2.R
 import com.example.taskrecycler2.ViewModelProviderFactory
 import com.example.taskrecycler2.local.Task
-import com.example.taskrecycler2.local.TaskDatabase
 import com.example.taskrecycler2.remote.TaskResponse
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.task_item.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -35,11 +33,17 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+
         taskViewModel = ViewModelProvider(this, providerFactory).get(TaskViewModel::class.java)
 
         taskViewModel.allTasks.observe(this, Observer {
             taskAdapter.submitList(it)
         })
+
+        taskViewModel.resultString.observe(this) { str ->
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+        }
 
         add_task.setOnClickListener {
             taskViewModel.insert(Task("пустое поле", false))

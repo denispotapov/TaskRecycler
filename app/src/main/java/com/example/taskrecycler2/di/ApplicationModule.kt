@@ -25,16 +25,12 @@ object ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideCoroutineScope(): CoroutineScope = GlobalScope
-
-    @Singleton
-    @Provides
     fun provideTaskDao(taskDatabase: TaskDatabase): TaskDao =
         taskDatabase.taskDao()
 
     @Singleton
     @Provides
-    fun provideDatabase(@AppContext context: Context, scope: CoroutineScope): TaskDatabase {
+    fun provideDatabase(@AppContext context: Context): TaskDatabase {
         var INSTANCE: TaskDatabase? = null
 
         INSTANCE = INSTANCE ?: Room.databaseBuilder(
@@ -44,7 +40,7 @@ object ApplicationModule {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 INSTANCE?.let { database ->
-                    scope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         populateDatabase(database.taskDao())
                     }
                 }

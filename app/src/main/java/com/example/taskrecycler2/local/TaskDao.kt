@@ -1,7 +1,7 @@
 package com.example.taskrecycler2.local
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
@@ -19,6 +19,6 @@ interface TaskDao {
     suspend fun deleteAllTasks()
 
     @Query("SELECT * FROM task_table")
-    fun getAllTasks(): LiveData<List<Task>>
+    fun getAllTasks(): Flow<List<Task>>
 
 }

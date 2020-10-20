@@ -1,10 +1,10 @@
 package com.example.taskrecycler2.local
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 interface TaskLocalDataSource {
 
-    fun getTasks(): LiveData<List<Task>>
+    fun getTasks(): Flow<List<Task>>
 
     suspend fun insertAll(tasks: List<Task>)
 

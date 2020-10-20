@@ -1,36 +1,46 @@
 package com.example.taskrecycler2.ui
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskrecycler2.TaskRepository
 import com.example.taskrecycler2.local.Task
-import com.example.taskrecycler2.TaskDefaultRepository
+import com.example.taskrecycler2.remote.Result
 import com.example.taskrecycler2.remote.TaskResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
-class TaskViewModel @Inject constructor(private val defaultRepository: TaskDefaultRepository) :
+class TaskViewModel @Inject constructor(private val taskRepository: TaskRepository) :
     ViewModel() {
 
-    val allTasks: LiveData<List<Task>> = defaultRepository.getTasks()
+    val resultString = MutableLiveData("")
 
-    fun insert(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        defaultRepository.insert(task)
+    val allTasks: LiveData<List<Task>> = taskRepository.getTasks()
+
+    fun insert(task: Task) = viewModelScope.launch {
+        taskRepository.insert(task)
     }
 
-    fun delete(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        defaultRepository.delete(task)
+    fun delete(task: Task) = viewModelScope.launch {
+        taskRepository.delete(task)
     }
 
-    fun deleteAllTasks() = viewModelScope.launch(Dispatchers.IO) {
-        defaultRepository.deleteAllTasks()
+    fun deleteAllTasks() = viewModelScope.launch {
+        taskRepository.deleteAllTasks()
     }
 
-    fun requestTask(remoteTasks: List<TaskResponse>) = viewModelScope.launch(Dispatchers.IO) {
-        defaultRepository.requestTasks(remoteTasks)
-
+    fun requestTask(remoteTasks: List<TaskResponse>) = viewModelScope.launch {
+        when (val requestTasks = taskRepository.requestTasks(remoteTasks)) {
+            is Result.Success -> {
+                resultString.value = "Задачи загружены"
+            }
+            is Result.Error -> {
+                Timber.d(requestTasks.exception)
+                resultString.value = requestTasks.exception.toString()
+            }
+        }
     }
 }
