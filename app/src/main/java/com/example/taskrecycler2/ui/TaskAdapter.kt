@@ -1,16 +1,14 @@
 package com.example.taskrecycler2.ui
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.taskrecycler2.R
+import com.example.taskrecycler2.databinding.TaskItemBinding
 import com.example.taskrecycler2.local.Task
-import kotlinx.android.synthetic.main.task_item.view.*
 
 
 class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskHolder>(TaskDiffCallback()) {
@@ -18,9 +16,8 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskHolder>(TaskDiffCallback()
     private var listener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskHolder {
-        return TaskHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.task_item, parent, false)
-        )
+        val binding = TaskItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+       return TaskHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskHolder, position: Int) {
@@ -34,15 +31,15 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskHolder>(TaskDiffCallback()
         return getItem(position)
     }
 
-    inner class TaskHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val taskText: EditText = itemView.edit_task_text
-        val completeTask: CheckBox = itemView.task_complete
+    inner class TaskHolder(val binding: TaskItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        val taskText: EditText = binding.editTaskText
+        val completeTask: CheckBox = binding.taskComplete
 
         init {
             taskText.setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) {
                     val task = getItem(adapterPosition)
-                    task.task = taskText.text.toString()
+                    task.task = binding.editTaskText.text.toString()
                     listener?.onChange(task)
 
                 }

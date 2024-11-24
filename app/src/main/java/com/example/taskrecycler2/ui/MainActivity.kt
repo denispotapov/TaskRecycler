@@ -1,26 +1,29 @@
 package com.example.taskrecycler2.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.core.os.BuildCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.taskrecycler2.BuildConfig
 import com.example.taskrecycler2.R
 import com.example.taskrecycler2.ViewModelProviderFactory
+import com.example.taskrecycler2.databinding.ActivityMainBinding
 import com.example.taskrecycler2.local.Task
 import com.example.taskrecycler2.remote.TaskResponse
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.task_item.*
+
 import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
@@ -31,9 +34,10 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+        //if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
 
         taskViewModel = ViewModelProvider(this, providerFactory).get(TaskViewModel::class.java)
 
@@ -42,14 +46,14 @@ class MainActivity : DaggerAppCompatActivity() {
         })
 
         taskViewModel.resultString.observe(this) { str ->
-            Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, str, Toast.LENGTH_LONG).show()
         }
 
-        add_task.setOnClickListener {
-            taskViewModel.insert(Task("пустое поле", false))
+        binding.addTask.setOnClickListener {
+            taskViewModel.insert(Task("", false))
         }
 
-        taskViewModel.requestTask(remoteTasks)
+        //taskViewModel.requestTask(remoteTasks)
 
         initRecycler()
         deleteTask()
@@ -65,7 +69,6 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.delete_all -> {
-                edit_task_text.clearFocus()
                     taskViewModel.deleteAllTasks()
                     Toast.makeText(this, "Все задачи удалены", Toast.LENGTH_SHORT).show()
                 return true
@@ -75,7 +78,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun initRecycler() {
-        recycler_view.apply {
+        binding.recyclerView.apply {
             adapter = taskAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
         }
@@ -93,18 +96,16 @@ class MainActivity : DaggerAppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                edit_task_text.clearFocus()
                 taskViewModel.delete(taskAdapter.getTaskAt(viewHolder.adapterPosition))
                 Toast.makeText(this@MainActivity, "Задача удалена", Toast.LENGTH_SHORT).show()
             }
         }
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recycler_view)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.recyclerView)
     }
 
     private fun saveTask() {
         taskAdapter.setOnItemClickListener(object : TaskAdapter.OnItemClickListener {
             override fun onChange(task: Task) {
-                edit_task_text.clearFocus()
                 taskViewModel.insert(task)
             }
 
