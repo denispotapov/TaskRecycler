@@ -45,9 +45,9 @@ class MainActivity : DaggerAppCompatActivity() {
             taskAdapter.submitList(it)
         })
 
-        taskViewModel.resultString.observe(this) { str ->
-            //Toast.makeText(this, str, Toast.LENGTH_LONG).show()
-        }
+        /*taskViewModel.resultString.observe(this) { str ->
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+        }*/
 
         binding.addTask.setOnClickListener {
             taskViewModel.insert(Task("", false))
